@@ -1,6 +1,11 @@
 package com.github.suzuki0keiichi.php_parser
 
-
+/**
+ * ここにあるPHPのトークン一覧(から不要なものを抜いた)
+ * 正規表現で定義
+ *
+ * http://www.php.net/manual/ja/tokens.php
+ */
 object Tokens {
   /**
    * <a href="language.oop5.abstract.php" class="xref">クラスの抽象化</a> (PHP 5.0.0 以降で使用可能)
