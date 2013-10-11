@@ -109,7 +109,7 @@ object Tokens {
    * <a href="language.basic-syntax.phpmode.php" class="link">HTML からの脱出</a>
    * 構文: ?&gt; or %&gt;
    */
-  val T_CLOSE_TAG = "(?|%)>"
+  val T_CLOSE_TAG = "(\\?|%)>"
 
   /**
    * <a href="language.basic-syntax.comments.php" class="link">コメント</a>
@@ -616,13 +616,13 @@ object Tokens {
    * <a href="language.basic-syntax.phpmode.php" class="link">HTMLからのエスケープ</a>
    * 構文: &lt;?php,&lt;? or &lt;%
    */
-  val T_OPEN_TAG = "<(?php|%)"
+  val T_OPEN_TAG = "<(\\?php|%|\\?)"
 
   /**
    * <a href="language.basic-syntax.phpmode.php" class="link">HTMLからのエスケープ</a>
    * 構文: &lt;?= or &lt;%=
    */
-  val T_OPEN_TAG_WITH_ECHO = "<(?=|%=)"
+  val T_OPEN_TAG_WITH_ECHO = "<(\\?=|%=)"
 
   /**
    * <a href="language.operators.assignment.php" class="link">代入演算子</a>
