@@ -135,8 +135,8 @@ object Tokens {
    * <a href="language.types.string.php#language.types.string.syntax" class="link">文字列構文</a>
    * 構文: &quot;foo&quot or &#039;bar&#039;
    */
-  val T_CONSTANT_ENCAPSED_STRING1 = "\""
-  val T_CONSTANT_ENCAPSED_STRING2 = "'"
+  val T_CONSTANT_ENCAPSED_STRING1 = """".*?(?<!\\)""""
+  val T_CONSTANT_ENCAPSED_STRING2 = """'.*?(?<!\\)'"""
 
   /**
    * <a href="control-structures.continue.php" class="link">continue</a>

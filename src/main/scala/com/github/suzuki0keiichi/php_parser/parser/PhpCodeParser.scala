@@ -1,15 +1,20 @@
-package com.github.suzuki0keiichi.php_parser
+package com.github.suzuki0keiichi.php_parser.parser
 
 import scala.util.parsing.combinator.RegexParsers
-import scala.io.Source
 import com.github.suzuki0keiichi.php_parser.tree.expression._
-import com.github.suzuki0keiichi.php_parser.tree.statement.{Line, Statement}
-import com.github.suzuki0keiichi.php_parser.statement.{ElseIf, If}
-import com.github.suzuki0keiichi.php_parser.tree.expression.StringLiteral
+import com.github.suzuki0keiichi.php_parser.tree.statement.Statement
+import com.github.suzuki0keiichi.php_parser.Tokens
+import com.github.suzuki0keiichi.php_parser.tree.statement.Line
 import com.github.suzuki0keiichi.php_parser.tree.expression.BooleanLiteral
+import com.github.suzuki0keiichi.php_parser.statement.ElseIf
+import com.github.suzuki0keiichi.php_parser.tree.expression.FunctionCall
 import com.github.suzuki0keiichi.php_parser.tree.expression.VariableRef
+import com.github.suzuki0keiichi.php_parser.statement.If
+import scala.util.parsing.input.PagedSeqReader
+import scala.collection.immutable.PagedSeq
+import scala.io.Source
 
-object PhpParser extends RegexParsers {
+object PhpCodeParser extends RegexParsers {
 
   import Tokens._
 
@@ -18,12 +23,12 @@ object PhpParser extends RegexParsers {
     case "false" => BooleanLiteral(false)
   }
 
-  lazy val stringLiteral1 = (T_CONSTANT_ENCAPSED_STRING1 + ".*" + T_CONSTANT_ENCAPSED_STRING1).r ^^ {
-    StringLiteral(_, false)
+  lazy val stringLiteral1 = T_CONSTANT_ENCAPSED_STRING1.r ^^ {
+    res => PhpStringParser.parse(res.substring(1, res.length - 1))
   }
 
-  lazy val stringLiteral2 = (T_CONSTANT_ENCAPSED_STRING2 + ".*" + T_CONSTANT_ENCAPSED_STRING2).r ^^ {
-    StringLiteral(_, true)
+  lazy val stringLiteral2 = T_CONSTANT_ENCAPSED_STRING2.r ^^ {
+    res => PhpStringParser.parse(res.substring(3, res.length - 3))
   }
 
   lazy val literal = booleanLiteral | stringLiteral1
@@ -61,20 +66,14 @@ object PhpParser extends RegexParsers {
 
   lazy val all = T_OPEN_TAG.r ~> statements <~ opt(T_CLOSE_TAG)
 
-  def parse(source: String) = parseAll(all, source) match {
-    case Success(result, _) => result
-    case failure: NoSuccess => println(failure)
-  }
-}
+  def parse(source: Source): Option[List[Statement]] = parse(new PagedSeqReader(PagedSeq.fromSource(source)))
 
-object TestMain {
-  def main(args: Array[String]) {
-    val phpSource =
-      """<?php
-        if (true) {
-          println("hoge");
-        }
-      """
-    println(PhpParser.parse(phpSource))
+  def parse(reader: scala.util.parsing.input.Reader[Char]): Option[List[Statement]] = parseAll(all, reader) match {
+    case Success(result, _) =>
+      Some(result)
+
+    case failure: NoSuccess =>
+      println(failure)
+      None
   }
 }
